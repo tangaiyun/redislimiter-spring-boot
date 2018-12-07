@@ -102,4 +102,44 @@ spring:
 ### "#Headers['X-Real-IP']"
 ### "#Cookies['userid']"
 
+## 3. 动态配置
+动态配置使用@DynamicRateLimiter标签，动态配置含义就是在运行时可以动态修改限流配置，这个是通过提供内置配置访问Rest API来实现的。
+```
+RestController
+@RequestMapping("/limiterconfig")
+@RequiredArgsConstructor
+public final class LimiterConfigResource implements InitializingBean, ApplicationContextAware {
+    ...
+    
+    @PutMapping
+    public void update(@RequestBody LimiterConfig limiterConfig, HttpServletResponse response) throws IOException {
+        if(applicationName.equals(limiterConfig.getApplicationName())) {
+            publish(limiterConfig);
+        }
+        else {
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            response.getWriter().print("Bad request for updating limiter configuration!");
+        }
+    }
+    @GetMapping
+    public LimiterConfig get(@RequestParam("controller") String controller, @RequestParam("method")String method) {
+        String limiterConfigKey = controller + ":" + method;
+        return redisLimiterConfigProcessor.get(limiterConfigKey);
+    }
+
+    @DeleteMapping
+    public void delete(@RequestParam("controller") String controller, @RequestParam("method")String method) {
+        LimiterConfig limiterConfig = new LimiterConfig();
+        limiterConfig.setApplicationName(applicationName);
+        limiterConfig.setControllerName(controller);
+        limiterConfig.setMethodName(method);
+        limiterConfig.setDeleted(true);
+        publish(limiterConfig);
+    }
+
+```
+目前提供了修改(PUT), 查询 (GET), 删除(DELETE)
+
+
+
 
