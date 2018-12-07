@@ -138,7 +138,41 @@ public final class LimiterConfigResource implements InitializingBean, Applicatio
     }
 
 ```
-目前提供了修改(PUT), 查询 (GET), 删除(DELETE)
+目前提供了修改(PUT), 查询 (GET), 删除(DELETE)三种操作。
+
+对于demo1项目
+
+### 我们可以通过 GET http://localhost:8888/limiterconfig?controller=DemoController&method=dynamicTest 来获取限流配置，返回值为
+
+```
+{
+  "applicationName": "demo1",
+  "controllerName": "DemoController",
+  "methodName": "dynamicTest",
+  "baseExp": "#Headers['userid']",
+  "path": "",
+  "timeUnit": "MINUTES",
+  "permits": 5,
+  "deleted": false
+}
+```
+### 通过指定Content-Type为application/json  PUT http://localhost:8888/limiterconfig， 发送内容如
+```
+{
+  "applicationName": "demo1",
+  "controllerName": "DemoController",
+  "methodName": "dynamicTest",
+  "baseExp": "#Headers['userid']",
+  "path": "",
+  "timeUnit": "MINUTES",
+  "permits": 10,
+  "deleted": false
+}
+
+```
+来改动限流配置
+
+### 通过 DELETE http://localhost:8888/limiterconfig?controller=DemoController&method=dynamicTest 可删除限流配置
 
 
 
