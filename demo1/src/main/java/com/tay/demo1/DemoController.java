@@ -38,7 +38,7 @@ public class DemoController {
     }
 
     @GetMapping("/dynamictest")
-    @DynamicRateLimiter(base = "#Headers['userid']", permits = 5, timeUnit = TimeUnit.MINUTES)
+    @DynamicRateLimiter(base = "#Headers['X-Real-IP']", permits = 5, timeUnit = TimeUnit.MINUTES)
     public String dynamicTest() {
         return "dynamictest!";
     }
