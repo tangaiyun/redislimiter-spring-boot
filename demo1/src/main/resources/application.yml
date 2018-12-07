@@ -1,0 +1,11 @@
+server:
+  port: 8888
+spring:
+  application:
+    name: demo1
+  redis-limiter:
+      redis-host: 127.0.0.1
+      check-action-timeout: 100
+      enable-dynamical-conf: true
+
+
