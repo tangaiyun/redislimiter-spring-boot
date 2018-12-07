@@ -92,10 +92,14 @@ spring:
 ```
 
 ## 2. base表达式说明
-@RateLimiter @DynamicRateLimiter 这两个表达式用法完全一致，它们都有一个属性base，含义就是限流是"基于what"来进行的。
+@RateLimiter @DynamicRateLimiter 这两个标签用法完全一致，它们都有一个属性base，含义就是限流是"基于what"来进行的，base为一个Spel表达式。
 
 ```
 @RateLimiter(base = "#Headers['userid']", permits = 2, timeUnit = TimeUnit.MINUTES) 
 @DynamicRateLimiter(base = "#Headers['X-Real-IP']", permits = 5, timeUnit = TimeUnit.MINUTES)
 ```
+目前base表达式仅支持从header和cookie中取值，Headers和Cookies就是两个Map, 下面两种配置都是合法的。
+### "#Headers['X-Real-IP']"
+### "#Cookies['userid']"
+
 
