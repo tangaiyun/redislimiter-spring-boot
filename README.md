@@ -90,3 +90,12 @@ spring:
         enable-dynamical-conf: true     # 是否开启动态配置                  默认值： false 
         channel： #RLConfigChannel      # 配置变更事件发送channel名称        默认值： #RLConfigChannel   
 ```
+
+## 2. base表达式说明
+@RateLimiter @DynamicRateLimiter 这两个表达式用法完全一致，它们都有一个属性base，含义就是限流是"基于what"来进行的。
+
+```
+@RateLimiter(base = "#Headers['userid']", permits = 2, timeUnit = TimeUnit.MINUTES) 
+@DynamicRateLimiter(base = "#Headers['X-Real-IP']", permits = 5, timeUnit = TimeUnit.MINUTES)
+```
+
