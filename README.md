@@ -69,5 +69,5 @@ public class DemoController {
 ## 7. 运行Demo1Application.java
 
 ## 8. 测试
-通过postman或者restd访问url http://localhost:8888/demo/test 在header中指定userid=tom, 可以发现tom一分钟最多只能访问2次
-通过postman或者restd访问url http://localhost:8888/demo/dynamictest 在header中指定X-Real-IP=127.0.0.1, 可以发现127.0.0.1一分钟最多只能访问5次
+###通过postman或者restd访问url http://localhost:8888/demo/test 在header中指定userid=tom, 可以发现tom一分钟最多只能访问2次
+###通过postman或者restd访问url http://localhost:8888/demo/dynamictest 在header中指定X-Real-IP=127.0.0.1, 可以发现127.0.0.1一分钟最多只能访问5次
