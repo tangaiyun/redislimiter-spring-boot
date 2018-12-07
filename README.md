@@ -19,14 +19,14 @@
 ## 5. 修改项目resources/application.yml文件
 ```
 server:
-  port: 8888
+    port: 8888
 spring:
-  application:
-    name: demo1                         
-  redis-limiter:
-      redis-host: 127.0.0.1
-      check-action-timeout: 100
-      enable-dynamical-conf: true
+    application:
+        name: demo1                         
+    redis-limiter:
+        redis-host: 127.0.0.1
+        check-action-timeout: 100
+        enable-dynamical-conf: true
 ```
 spring.application.name必须配置
 
@@ -73,3 +73,20 @@ public class DemoController {
 ### 通过postman或者restd访问url http://localhost:8888/demo/dynamictest 在header中指定X-Real-IP=127.0.0.1, 可以发现127.0.0.1一分钟最多只能访问5次
 
 # 高阶教程
+## 1. 配置项大全
+```
+spring:
+    redis-limiter: 
+        redis-host: 127.0.0.1           # redis server IP                  默认值：127.0.0.1
+        redis-port: 6379                # redis service 端口               默认值：6379  
+        redis-password: test            # redis 访问密码                   默认值：null 
+        redis-connection-timeout: 2000  # redis 连接超时时间               默认值：2000
+        redis-pool-max-idle: 50         # redis 连接池最大空闲连接数        默认值：50
+        redis-pool-min-idle: 10         # redis 连接池最小空闲连接数        默认值： 10 
+        redis-pool-max-wait-millis： -1 # 从连接池中获取连接最大等待时间     默认值： -1 
+        redis-pool-max-total: 200       # 连接池中最大连接数                默认值： 200
+        redis-key-prefix: #RL           # 访问痕迹key值前缀                 默认值： #RL
+        check-action-timeout: 100       # 访问检查动作最大执行时间(单位毫秒) 默认值： 100
+        enable-dynamical-conf: true     # 是否开启动态配置                  默认值： false 
+        channel： #RLConfigChannel      # 配置变更事件发送channel名称        默认值： #RLConfigChannel   
+```
