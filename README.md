@@ -48,16 +48,26 @@ import java.util.concurrent.TimeUnit;
 public class DemoController {
 
     @GetMapping("/test")
-    @RateLimiter(base = "#Headers['userid']", permits = 2, timeUnit = TimeUnit.MINUTES) //基于用户限流，每分钟最多2次访问，用户id在header中，key为userid
+    //基于用户限流，独立用户每分钟最多2次访问，用户id在header中，key为userid
+    //RateLimiter标签为静态配置，此类配置不可动态修改
+    @RateLimiter(base = "#Headers['userid']", permits = 2, timeUnit = TimeUnit.MINUTES) 
     public String test() {
         return "test!";
     }
 
     @GetMapping("/dynamictest")
-    @DynamicRateLimiter(base = "#Headers['userid']", permits = 5, timeUnit = TimeUnit.MINUTES)
+    //基于来源ip限流，独立ip每分钟最多访问5次访问，来源ip位于header中，key为X-Real-IP
+    //DynamicRateLimiter标签代表动态配置，此类配置可在运行时动态修改
+    @DynamicRateLimiter(base = "#Headers['X-Real-IP']", permits = 5, timeUnit = TimeUnit.MINUTES)
     public String dynamicTest() {
         return "dynamictest!";
     }
 
 }
 ```
+
+## 7. 运行Demo1Application.java
+
+## 8. 测试
+通过postman或者restd访问url http://localhost:8888/demo/test 在header中指定userid=tom, 可以发现tom一分钟最多只能访问2次
+通过postman或者restd访问url http://localhost:8888/demo/dynamictest 在header中指定X-Real-IP=127.0.0.1, 可以发现127.0.0.1一分钟最多只能访问5次
