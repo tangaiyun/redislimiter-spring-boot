@@ -92,7 +92,7 @@ spring:
 ```
 
 ## 2. base表达式说明
-@RateLimiter @DynamicRateLimiter 这两个标签用法完全一致，它们都有一个属性base，含义就是限流是"基于what"来进行的，base为一个Spel表达式。
+@RateLimiter @DynamicRateLimiter 这两个标签用法完全一致，它们都有一个属性base，含义就是限流是"基于what"来进行的，如果你不指定base,那么所有的请求都会聚合在一起统计，base为一个Spel表达式。
 
 ```
 @RateLimiter(base = "#Headers['userid']", permits = 2, timeUnit = TimeUnit.MINUTES) 
