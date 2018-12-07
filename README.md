@@ -1,7 +1,7 @@
 # redislimiter-spring-boot
 一个优秀的spring boot API限流框架
 
-#快速开始
+# 快速开始
 ## 1. git clone https://github.com/tangaiyun/redislimiter-spring-boot.git
 
 ## 2. cd redislimiter-spring-boot-starter
@@ -72,4 +72,4 @@ public class DemoController {
 ### 通过postman或者restd访问url http://localhost:8888/demo/test 在header中指定userid=tom, 可以发现tom一分钟最多只能访问2次
 ### 通过postman或者restd访问url http://localhost:8888/demo/dynamictest 在header中指定X-Real-IP=127.0.0.1, 可以发现127.0.0.1一分钟最多只能访问5次
 
-## 高阶教程
+# 高阶教程
