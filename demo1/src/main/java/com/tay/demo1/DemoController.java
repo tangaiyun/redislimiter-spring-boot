@@ -30,17 +30,20 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/demo")
 public class DemoController {
-
+    
     @GetMapping("/test")
-    @RateLimiter(base = "#Headers['userid']", permits = 2, timeUnit = TimeUnit.MINUTES)
+    //基于用户限流，独立用户每分钟最多2次访问，用户id在header中，key为userid
+    //RateLimiter标签为静态配置，此类配置不可动态修改
+    @RateLimiter(base = "#Headers['userid']", permits = 2, timeUnit = TimeUnit.MINUTES) 
     public String test() {
         return "test!";
     }
 
     @GetMapping("/dynamictest")
+    //基于来源ip限流，独立ip每分钟最多访问5次访问，来源ip位于header中，key为X-Real-IP
+    //DynamicRateLimiter标签代表动态配置，此类配置可在运行时动态修改
     @DynamicRateLimiter(base = "#Headers['X-Real-IP']", permits = 5, timeUnit = TimeUnit.MINUTES)
     public String dynamicTest() {
         return "dynamictest!";
     }
-
 }
