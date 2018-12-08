@@ -75,7 +75,7 @@ it is so crazy!
 
 ## 9. Testing
 ```
-You can use a HTTP client tool such as postman,restd, curl, and visit the URL http://localhost:8888/demo/test. Don't forget to add a pair userid=tom in your HTTP request header, then you can find the user with userid "tom" can visit this url twice successfully at most in one minute.
+You can use a HTTP client tool such as postman,restd, curl, and visit the URL http://localhost:8888/demo/test. Don't forget to add a pair value "userid=tom" in your HTTP request header, then you can find the user with userid "tom" can visit this url twice successfully at most in one minute.
 
 by postman,restd visit the URL http://localhost:8888/demo/dynamictest, and put the pair value "X-Real-IP=127.0.0.1" in your HTTP request header,  then you can find only five requests with header "X-Real-IP=127.0.0.1" will be successful in one minute.
 ```
