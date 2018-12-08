@@ -80,8 +80,6 @@ public final class RedisLimiterConfigProcessor extends JedisPubSub implements Ap
                 jedis.subscribe(RedisLimiterConfigProcessor.this, redisLimiterProperties.getChannel());
             }
             catch (JedisConnectionException e) {
-                System.out.println("JedisConnectionException was catch!");
-                e.printStackTrace();
                 mistaken = true;
             }
             finally {
@@ -109,7 +107,6 @@ public final class RedisLimiterConfigProcessor extends JedisPubSub implements Ap
                 catch(InterruptedException e) {
                 }
                 if(subThread.isMistaken()) {
-                    System.out.println("A new subThread will be created!");
                     subThread = new SubThread();
                     subThread.start();
                 }
