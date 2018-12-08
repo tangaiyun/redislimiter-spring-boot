@@ -23,11 +23,10 @@ import java.lang.annotation.Target;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Retention(RUNTIME)
-@Target({ TYPE, METHOD })
+@Target({ METHOD })
 public @interface DynamicRateLimiter {
     String base() default "";
 
