@@ -1,4 +1,4 @@
-[英文](https://github.com/tangaiyun/redislimiter-spring-boot/blob/master/README.md) | [中文](https://github.com/tangaiyun/redislimiter-spring-boot/blob/master/README-CN.md)
+[English](https://github.com/tangaiyun/redislimiter-spring-boot/blob/master/README.md) | [中文](https://github.com/tangaiyun/redislimiter-spring-boot/blob/master/README-CN.md)
 
 # redislimiter-spring-boot
 a excellent API limiting framework for Spring boot/cloud application, especially for microservice project 
