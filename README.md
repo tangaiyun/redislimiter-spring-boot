@@ -142,9 +142,10 @@ Two annotations have the "base" attribute，that means what your limiting based 
 @DynamicRateLimiter(base = "#Headers['X-Real-IP']", permits = 5, timeUnit = TimeUnit.MINUTES)
 ```
 at the present, the "base" expression only supports get value from HTTP header and cookie. In Spel expression evaluation context they are named as "Headers" and "Cookies" separately, so the two expressions are valid as below:
-### "#Headers['X-Real-IP']"
-### "#Cookies['userid']"
-
+```
+"#Headers['X-Real-IP']"
+"#Cookies['userid']"
+```
 ## 2.3 Annotation -- path
 The path has default value "" if you did not set. When the path has value "", and the value of path will be set as request.getRequestURI(). In general, that is OK. But in one special case, you should need to set path explicitly.
 
