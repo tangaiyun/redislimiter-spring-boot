@@ -1,4 +1,4 @@
-[英文](https://github.com/tangaiyun/redislimiter-spring-boot/blob/master/README.md) | [中文](https://github.com/tangaiyun/redislimiter-spring-boot/blob/master/README-CN.md)
+[English](https://github.com/tangaiyun/redislimiter-spring-boot/blob/master/README.md) | [中文](https://github.com/tangaiyun/redislimiter-spring-boot/blob/master/README-CN.md)
 
 # redislimiter-spring-boot
 一个优秀的分布式spring boot/Spring Cloud API限流框架，特别适合微服务架构.
