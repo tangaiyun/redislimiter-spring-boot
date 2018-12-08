@@ -112,6 +112,7 @@ public @interface RateLimiter {
 
     int permits() default 10000;
 }
+
 @Retention(RUNTIME)
 @Target({ TYPE, METHOD })
 public @interface DynamicRateLimiter {
