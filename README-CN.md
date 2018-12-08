@@ -2,10 +2,10 @@
 一个优秀的分布式spring boot/Spring Cloud API限流框架，特别适合微服务架构.
 
 # 快速开始
-# 1. git clone https://github.com/tangaiyun/redislimiter-spring-boot.git
-# 2. cd redislimiter-spring-boot-starter
-# 3. mvn clean install
-# 4. 新建一个Spring boot API 项目，具体参考demo1项目，要在项目依赖中加入
+## 1. git clone https://github.com/tangaiyun/redislimiter-spring-boot.git
+## 2. cd redislimiter-spring-boot-starter
+## 3. mvn clean install
+## 4. 新建一个Spring boot API 项目，具体参考demo1项目，要在项目依赖中加入
 ```
         <dependency>
             <groupId>com.tay</groupId>
@@ -13,7 +13,7 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 ```
-# 5. 修改项目resources/application.yml文件
+## 5. 修改项目resources/application.yml文件
 ```
 server:
     port: 8888                                #端口
@@ -27,7 +27,7 @@ spring:
 ```
 spring.application.name必须配置
 
-# 6. 新建一个RestController类
+## 6. 新建一个RestController类
 ```
 package com.tay.demo1;
 
@@ -62,14 +62,14 @@ public class DemoController {
 
 }
 ```
-# 7. 在本机安装redis并启动，强烈建议在本机安装docker环境，然后执行
+## 7. 在本机安装redis并启动，强烈建议在本机安装docker环境，然后执行
 ```
 sudo docker run -d -p 6379:6379 redis
 ```
 就是这么爽气！
 
-# 8. 运行Demo1Application.java
-# 9. 测试
+## 8. 运行Demo1Application.java
+## 9. 测试
 ```
 通过postman或者restd访问url http://localhost:8888/demo/test 在header中指定userid=tom, 可以发现tom一分钟最多只能访问2次
 
