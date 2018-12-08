@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 import java.util.concurrent.TimeUnit;
 
 @Retention(RUNTIME)
-@Target({ TYPE, METHOD })
+@Target({ METHOD })
 public @interface RateLimiter {
 
     String base() default "";
