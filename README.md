@@ -90,9 +90,41 @@ spring:
         enable-dynamical-conf: true     # 是否开启动态配置                  默认值： false 
         channel： #RLConfigChannel      # 配置变更事件发送channel名称        默认值： #RLConfigChannel   
 ```
+## 2 标签
+@RateLimiter, @DynamicRateLimiter 是用户最经常使用到的。
 
-## 2. base表达式说明
-@RateLimiter @DynamicRateLimiter 这两个标签用法完全一致，它们都有一个属性base，含义就是限流是"基于what"来进行的，如果你不指定base,那么所有的请求都会聚合在一起统计，base为一个Spel表达式。
+## 2.1 标签说明 --整体说明
+@RateLimiter @DynamicRateLimiter 这两个标签用法完全一致,他们都有4个属性base、path、timeUnit、permits.
+
+```
+@Retention(RUNTIME)
+@Target({ TYPE, METHOD })
+public @interface RateLimiter {
+
+    String base() default "";
+
+    String path() default "";
+
+    TimeUnit timeUnit() default TimeUnit.SECONDS;
+
+    int permits() default 10000;
+}
+@Retention(RUNTIME)
+@Target({ TYPE, METHOD })
+public @interface DynamicRateLimiter {
+    String base() default "";
+
+    String path() default "";
+
+    TimeUnit timeUnit() default TimeUnit.SECONDS;
+
+    int permits() default 10000;
+}
+```
+
+
+## 2.2 标签说明 -- base参数(Spel表达式)说明
+标签都有一个属性base，含义就是限流是"基于what"来进行的，如果你不指定base,那么所有的请求都会聚合在一起统计，base为一个Spel表达式。
 
 ```
 @RateLimiter(base = "#Headers['userid']", permits = 2, timeUnit = TimeUnit.MINUTES) 
@@ -101,6 +133,28 @@ spring:
 目前base表达式仅支持从header和cookie中取值，Headers和Cookies就是两个Map, 下面两种配置都是合法的。
 ### "#Headers['X-Real-IP']"
 ### "#Cookies['userid']"
+
+## 2.3 标签使用 -- path 参数说明
+path 如果不设置默认值是"", 当path为"", 框架内部会把它改写为request.getRequestURI(),一般情况下框架默认行为就OK了。但在一种情况下你可能需要设置path参数，就是RequestMapping的path里面包含Path Parameters的情况，例如：
+```
+    @GetMapping("/user/{userid}")
+    @DynamicRateLimiter(base = "#Headers['X-Real-IP']", path = "/user", permits = 5, timeUnit = TimeUnit.MINUTES)
+    public User get(@PathVariable String userid) {
+        User user ...
+       
+        return user;
+    }
+```
+在这种情况下，我们一般不会基于"/user/001"这样统计，所有访问"/user/001", "/user/002"的请求都会聚合到path "/user'上统计。
+
+## 2.4 标签使用 -- timeUnit 参数说明
+访问统计时间单位，以下4种都是有效的：
+```
+TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS, TimeUnit.DAYS
+```
+
+## 2.5 标签使用 -- permits 参数说明
+单位时间内允许访问的次数
 
 ## 3. 动态配置
 动态配置使用@DynamicRateLimiter标签，动态配置含义就是在运行时可以动态修改限流配置，这个是通过提供内置配置访问Rest API来实现的。
