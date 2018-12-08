@@ -19,14 +19,14 @@
 ## 5. 修改项目resources/application.yml文件
 ```
 server:
-    port: 8888
+    port: 8888                                #端口
 spring:
     application:
-        name: demo1                         
-    redis-limiter:
-        redis-host: 127.0.0.1
-        check-action-timeout: 100
-        enable-dynamical-conf: true
+        name: demo1                           #应用名称必须要配置，不然无法启动
+    redis-limiter:                            #限流器配置
+        redis-host: 127.0.0.1                 #redis server ip  
+        check-action-timeout: 100             #访问检查动作最大执行时间(单位毫秒）
+        enable-dynamical-conf: true           #开启动态限流配置 
 ```
 spring.application.name必须配置
 
