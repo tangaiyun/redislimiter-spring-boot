@@ -2,7 +2,7 @@
 一个优秀的分布式spring boot/Spring Cloud API限流框架，特别适合微服务架构.
 
 # 快速开始
-# 1. git clone https://github.com/tangaiyun/redislimiter-spring-boot.git 或 https://gitee.com/aiyuntang/redislimiter-spring-boot.git
+# 1. git clone https://github.com/tangaiyun/redislimiter-spring-boot.git
 # 2. cd redislimiter-spring-boot-starter
 # 3. mvn clean install
 # 4. 新建一个Spring boot API 项目，具体参考demo1项目，要在项目依赖中加入
