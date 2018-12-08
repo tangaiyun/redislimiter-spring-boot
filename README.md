@@ -106,7 +106,7 @@ spring:
 
 ```
 @Retention(RUNTIME)
-@Target({ TYPE, METHOD })
+@Target({ METHOD })
 public @interface RateLimiter {
 
     String base() default "";
@@ -119,7 +119,7 @@ public @interface RateLimiter {
 }
 
 @Retention(RUNTIME)
-@Target({ TYPE, METHOD })
+@Target({ METHOD })
 public @interface DynamicRateLimiter {
     String base() default "";
 
