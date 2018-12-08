@@ -1,5 +1,5 @@
 # redislimiter-spring-boot
-一个优秀的spring boot API限流框架
+一个优秀的分布式spring boot/Spring Cloud API限流框架，特别适合微服务架构.
 
 # 快速开始
 ## 1. git clone https://github.com/tangaiyun/redislimiter-spring-boot.git
@@ -69,8 +69,11 @@ public class DemoController {
 ## 7. 运行Demo1Application.java
 
 ## 8. 测试
-### 通过postman或者restd访问url http://localhost:8888/demo/test 在header中指定userid=tom, 可以发现tom一分钟最多只能访问2次
-### 通过postman或者restd访问url http://localhost:8888/demo/dynamictest 在header中指定X-Real-IP=127.0.0.1, 可以发现127.0.0.1一分钟最多只能访问5次
+```
+通过postman或者restd访问url http://localhost:8888/demo/test 在header中指定userid=tom, 可以发现tom一分钟最多只能访问2次
+
+通过postman或者restd访问url http://localhost:8888/demo/dynamictest 在header中指定X-Real-IP=127.0.0.1, 可以发现127.0.0.1一分钟最多只能访问5次
+```
 
 # 高阶教程
 ## 1. 配置项大全
@@ -196,7 +199,7 @@ public final class LimiterConfigResource implements InitializingBean, Applicatio
 
 对于demo1项目
 
-### 我们可以通过 GET http://localhost:8888/limiterconfig?controller=DemoController&method=dynamicTest 来获取限流配置，返回值为
+我们可以通过 GET http://localhost:8888/limiterconfig?controller=DemoController&method=dynamicTest 来获取限流配置，返回值为
 
 ```
 {
@@ -210,7 +213,7 @@ public final class LimiterConfigResource implements InitializingBean, Applicatio
   "deleted": false
 }
 ```
-### 通过指定Content-Type为application/json  PUT http://localhost:8888/limiterconfig， 发送内容如
+ 通过指定Content-Type为application/json  PUT http://localhost:8888/limiterconfig 来改动限流配置, 发送内容如
 ```
 {
   "applicationName": "demo1",
@@ -224,9 +227,9 @@ public final class LimiterConfigResource implements InitializingBean, Applicatio
 }
 
 ```
-来改动限流配置
 
-### 通过 DELETE http://localhost:8888/limiterconfig?controller=DemoController&method=dynamicTest 可删除限流配置
+
+通过 DELETE http://localhost:8888/limiterconfig?controller=DemoController&method=dynamicTest 可删除限流配置
 
 
 
