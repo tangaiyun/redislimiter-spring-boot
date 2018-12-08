@@ -65,10 +65,15 @@ public class DemoController {
 
 }
 ```
+## 7. 在本机安装redis并启动，强烈建议在本机安装docker环境，然后执行
+```
+sudo docker run -d -p 6379:6379 redis
+```
+就是这么爽气！
 
-## 7. 运行Demo1Application.java
+## 8. 运行Demo1Application.java
 
-## 8. 测试
+## 9. 测试
 ```
 通过postman或者restd访问url http://localhost:8888/demo/test 在header中指定userid=tom, 可以发现tom一分钟最多只能访问2次
 
