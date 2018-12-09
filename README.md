@@ -1,25 +1,33 @@
 [English](https://github.com/tangaiyun/redislimiter-spring-boot/blob/master/README.md) | [中文](https://github.com/tangaiyun/redislimiter-spring-boot/blob/master/README-CN.md)
 
 # redislimiter-spring-boot
-a excellent API limiting framework for Spring boot/cloud application, especially for microservice project 
+An excellent API limiting framework for Spring boot/cloud application, especially for microservice project 
 
-# Quickstart
-## 1. git clone https://github.com/tangaiyun/redislimiter-spring-boot.git
+## Quickstart
 
-## 2. cd redislimiter-spring-boot-starter
-
-## 3. mvn clean install
-
-## 4. create a Spring boot API project refer to sample project "demo1"，and you need to add dependency in pom.xml
+### Clone, build and install
+``` bash
+git clone https://github.com/tangaiyun/redislimiter-spring-boot.git
+cd redislimiter-spring-boot-starter
+mvn clean install
 ```
+
+### Add to your POM
+Then create a Spring boot API project refer to sample project "demo1"，and you need to add dependency in pom.xml
+
+``` xml
         <dependency>
             <groupId>com.tay</groupId>
             <artifactId>redislimiter-spring-boot-starter</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 ```
-## 5. modify application configuration---resources/application.yml
-```
+
+### Configuration
+
+For `resources/application.yml` you need to add the following lines.
+
+``` yaml
 server:
     port: 8888                                #port
 spring:
@@ -30,10 +38,12 @@ spring:
         check-action-timeout: 100             #check action will be executed asynchronous, this is the timeout value
         enable-dynamical-conf: true           #turn on the switch for dynammically limiting configuration support 
 ```
-spring.application.name must be set
 
-## 6. create a RestController class
-```
+
+
+### Create a RestController
+
+``` java
 package com.tay.demo1;
 
 import com.tay.redislimiter.RateLimiter;
@@ -67,24 +77,30 @@ public class DemoController {
 
 }
 ```
-## 7. Start Redis server in local machine, if your PC has Docker, there is a easy way to start Redis server in Docker
-```
+
+### Start Redis server
+
+Start Redis server on a local machine or with Docker.
+
+``` bash
 sudo docker run -d -p 6379:6379 redis
 ```
+
 it is so crazy!
 
-## 8. Run Demo1Application.java
+### Run Demo1Application.java
 
-## 9. Testing
-```
-You can use a HTTP client tool such as postman,restd, curl, and visit the URL http://localhost:8888/demo/test. Don't forget to add a pair value "userid=tom" in your HTTP request header, then you can find the user with userid "tom" can visit this url twice successfully at most in one minute.
+### Testing
 
-by postman,restd visit the URL http://localhost:8888/demo/dynamictest, and put the pair value "X-Real-IP=127.0.0.1" in your HTTP request header,  then you can find only five requests with header "X-Real-IP=127.0.0.1" will be successful in one minute.
-```
+You can use a HTTP client tool such as Postman, restd or curl, and get the URL `http://localhost:8888/demo/test`. Don't forget to add a pair value `userid=tom` in your HTTP request header. You will be able to find the user with userid "tom" can visit this url twice successfully at most in one minute.
 
-# Advanced Guide
-## 1. All Configuration Items
-```
+With Postman/restd visiting `http://localhost:8888/demo/dynamictest` with the pair value `X-Real-IP=127.0.0.1` in your HTTP request header,  you can find only five requests with header `X-Real-IP=127.0.0.1` will be successful in one minute.
+
+
+## Advanced Guide
+### Complete Configuration Items
+
+``` yaml
 spring:
     redis-limiter: 
         redis-host: 127.0.0.1           # redis server IP                   default：127.0.0.1
@@ -100,13 +116,17 @@ spring:
         enable-dynamical-conf: true     # the switch for enable dynamical   default：false 
         channel： #RLConfigChannel      # conf change event pub/sub channel default： #RLConfigChannel   
 ```
-## 2 Annotation
-@RateLimiter, @DynamicRateLimiter   
 
-## 2.1 Annotation -- General Description
-@RateLimiter @DynamicRateLimiter these two annotations have same four attributes (base, path, timeUnit, permits)
+### Annotations
 
-```
+- `@RateLimiter`
+- `@DynamicRateLimiter`  
+
+####  General Description
+
+`@RateLimiter` `@DynamicRateLimiter` these two annotations have same four attributes (`base`, `path`, `timeUnit`, `permits`)
+
+``` java
 @Retention(RUNTIME)
 @Target({ METHOD })
 public @interface RateLimiter {
@@ -134,23 +154,29 @@ public @interface DynamicRateLimiter {
 ```
 
 
-## 2.2 Annotation -- base(Spel expression)
-Two annotations have the "base" attribute，that means what your limiting based on(maybe user's id, remote IP etc.)，and if you don't asssign "base" attribute, then all requests will be accumulated as a whole one，the "base" should be a Spel exression。
+#### base (Spel expression)
 
-```
+Two annotations have the `base` attribute，that means what your limiting based on(maybe user's id, remote IP etc.). If you don't asssign `base` attribute, all requests will be accumulated as a whole one，the "base" should be a Spel exression。
+
+``` java
 @RateLimiter(base = "#Headers['userid']", permits = 2, timeUnit = TimeUnit.MINUTES) 
 @DynamicRateLimiter(base = "#Headers['X-Real-IP']", permits = 5, timeUnit = TimeUnit.MINUTES)
 ```
-at the present, the "base" expression only supports get value from HTTP header and cookie. In Spel expression evaluation context they are named as "Headers" and "Cookies" separately, so the two expressions are valid as below:
+
+At the present, the `base` expression only supports get value from HTTP header and cookie. In Spel expression evaluation context they are named as `Headers` and `Cookies` separately, so the two expressions are valid as below:
+
 ```
+
 "#Headers['X-Real-IP']"
 "#Cookies['userid']"
 ```
-## 2.3 Annotation -- path
+
+#### path
 The path has default value "" if you did not set. When the path has value "", and the value of path will be set as request.getRequestURI(). In general, that is OK. But in one special case, you should need to set path explicitly.
 
-for example as below:
-```
+For example:
+
+``` java
     @GetMapping("/user/{userid}")
     @DynamicRateLimiter(base = "#Headers['X-Real-IP']", path = "/user", permits = 5, timeUnit = TimeUnit.MINUTES)
     public User get(@PathVariable String userid) {
@@ -159,23 +185,29 @@ for example as below:
         return user;
     }
 ```
-the GetMapping has PathVariable-{userid}. In this case, we would not count visiting times base on "/user/001". If we set the path
-value to "/user", so all requsts like "/user/xxx" will be added up base on "/user".  
+
+The GetMapping has PathVariable-{userid}. In this case, we would not count visiting times base on `/user/001`. If we set the path
+value to `/user`, so all requsts like `/user/xxx` will be added up base on `/user`.  
 
 
-## 2.4 Annotation -- timeUnit
-Four TimeUnits are valid ：
-```
-TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS, TimeUnit.DAYS
-```
+#### timeUnit
 
-## 2.5 Annotation -- permits
+Four TimeUnits are valid:
+
+- `TimeUnit.SECONDS`
+- `TimeUnit.MINUTES`
+- `TimeUnit.HOURS`
+- `TimeUnit.DAYS`
+
+#### permits
 
 Number of visits allowed per unit of time
 
-## 3. Dynamic configuration
-@DynamicRateLimiter annotation makes configuration can be changed dynamically, we can change the configuraton by internal RESTful API.
-```
+### Dynamic configuration
+
+`@DynamicRateLimiter` annotation makes configuration can be changed dynamically, we can change the configuraton by internal RESTful API.
+
+``` java
 RestController
 @RequestMapping("/limiterconfig")
 @RequiredArgsConstructor
@@ -209,13 +241,14 @@ public final class LimiterConfigResource implements InitializingBean, Applicatio
     }
 
 ```
+
 Currently, this framework support three actions (update, query, delete).
 
-for example demo1 project
+For example (as in the demo1 project)
 
-GET http://localhost:8888/limiterconfig?controller=DemoController&method=dynamicTest, the result will be:
+The  result will of GET http://localhost:8888/limiterconfig?controller=DemoController&method=dynamicTest 
 
-```
+``` json
 {
   "applicationName": "demo1",
   "controllerName": "DemoController",
@@ -227,8 +260,10 @@ GET http://localhost:8888/limiterconfig?controller=DemoController&method=dynamic
   "deleted": false
 }
 ```
- if we want to update configuration, assign Content-Type as application/json, then excute  PUT http://localhost:8888/limiterconfig, the request body as below: 
-```
+
+If we want to update configuration, assign Content-Type as application/json, then excute PUT http://localhost:8888/limiterconfig, the request body as below: 
+
+``` json
 {
   "applicationName": "demo1",
   "controllerName": "DemoController",
@@ -243,7 +278,7 @@ GET http://localhost:8888/limiterconfig?controller=DemoController&method=dynamic
 ```
 
 
-if we want to delete a configuration, execute DELETE http://localhost:8888/limiterconfig?controller=DemoController&method=dynamicTest, the limiting configuration item for Controller "DemoController" and method "dynamicTest" will be deleted.
+If we want to delete a configuration, execute DELETE http://localhost:8888/limiterconfig?controller=DemoController&method=dynamicTest, the limiting configuration item for Controller `DemoController` and method `dynamicTest` will be deleted.
 
 
 
