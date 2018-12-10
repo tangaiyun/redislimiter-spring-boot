@@ -105,6 +105,7 @@ spring:
 @RateLimiter, @DynamicRateLimiter   
 
 * Annotation -- General Description
+
 @RateLimiter @DynamicRateLimiter these two annotations have same four attributes (base, path, timeUnit, permits)
 
 ```
@@ -136,6 +137,7 @@ public @interface DynamicRateLimiter {
 
 
 * Annotation -- base(Spel expression)
+
 Two annotations have the "base" attribute，that means what your limiting based on(maybe user's id, remote IP etc.)，and if you don't asssign "base" attribute, then all requests will be accumulated as a whole one，the "base" should be a Spel exression。
 
 ```
@@ -148,6 +150,7 @@ at the present, the "base" expression only supports get value from HTTP header a
 "#Cookies['userid']"
 ```
 * Annotation -- path
+
 The path has default value "" if you did not set. When the path has value "", and the value of path will be set as request.getRequestURI(). In general, that is OK. But in one special case, you should need to set path explicitly.
 
 for example as below:
@@ -165,6 +168,7 @@ value to "/user", so all requsts like "/user/xxx" will be added up base on "/use
 
 
 * Annotation -- timeUnit
+
 Four TimeUnits are valid ：
 ```
 TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS, TimeUnit.DAYS
@@ -175,6 +179,7 @@ TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS, TimeUnit.DAYS
 Number of visits allowed per unit of time
 
 * Dynamic configuration
+
 @DynamicRateLimiter annotation makes configuration can be changed dynamically, we can change the configuraton by internal RESTful API.
 ```
 RestController
