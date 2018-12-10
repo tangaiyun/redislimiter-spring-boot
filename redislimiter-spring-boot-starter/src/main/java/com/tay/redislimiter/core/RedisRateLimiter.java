@@ -89,13 +89,9 @@ public class RedisRateLimiter {
                     Long val = (Long) jedis.eval(LUA_SECOND_SCRIPT, keys, args);
                     rtv = (val > 0);
 
-                } else if (timeUnit == TimeUnit.MINUTES) {
+                } else if (timeUnit == TimeUnit.MINUTES || timeUnit == TimeUnit.HOURS || timeUnit == TimeUnit.DAYS) {
                     rtv = doPeriod(jedis, keyPrefix);
-                } else if (timeUnit == TimeUnit.HOURS) {
-                    rtv = doPeriod(jedis, keyPrefix);
-                } else if (timeUnit == TimeUnit.DAYS) {
-                    rtv = doPeriod(jedis, keyPrefix);
-                }
+                } 
             }
         }
         return rtv;

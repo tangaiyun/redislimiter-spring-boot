@@ -39,8 +39,6 @@ spring:
         enable-dynamical-conf: true           #turn on the switch for dynammically limiting configuration support 
 ```
 
-
-
 ### Create a RestController
 
 ``` java
@@ -77,7 +75,6 @@ public class DemoController {
 
 }
 ```
-
 ### Start Redis server
 
 Start Redis server on a local machine or with Docker.
@@ -92,6 +89,7 @@ it is so crazy!
 
 ### Testing
 
+
 You can use a HTTP client tool such as Postman, restd or curl, and get the URL `http://localhost:8888/demo/test`. Don't forget to add a pair value `userid=tom` in your HTTP request header. You will be able to find the user with userid "tom" can visit this url twice successfully at most in one minute.
 
 With Postman/restd visiting `http://localhost:8888/demo/dynamictest` with the pair value `X-Real-IP=127.0.0.1` in your HTTP request header,  you can find only five requests with header `X-Real-IP=127.0.0.1` will be successful in one minute.
@@ -101,6 +99,7 @@ With Postman/restd visiting `http://localhost:8888/demo/dynamictest` with the pa
 ### Complete Configuration Items
 
 ``` yaml
+
 spring:
     redis-limiter: 
         redis-host: 127.0.0.1           # redis server IP                   default：127.0.0.1
@@ -153,7 +152,6 @@ public @interface DynamicRateLimiter {
 }
 ```
 
-
 #### base (Spel expression)
 
 Two annotations have the `base` attribute，that means what your limiting based on(maybe user's id, remote IP etc.). If you don't asssign `base` attribute, all requests will be accumulated as a whole one，the "base" should be a Spel exression。
@@ -170,8 +168,8 @@ At the present, the `base` expression only supports get value from HTTP header a
 "#Headers['X-Real-IP']"
 "#Cookies['userid']"
 ```
-
 #### path
+
 The path has default value "" if you did not set. When the path has value "", and the value of path will be set as request.getRequestURI(). In general, that is OK. But in one special case, you should need to set path explicitly.
 
 For example:
@@ -208,6 +206,7 @@ Number of visits allowed per unit of time
 `@DynamicRateLimiter` annotation makes configuration can be changed dynamically, we can change the configuraton by internal RESTful API.
 
 ``` java
+
 RestController
 @RequestMapping("/limiterconfig")
 @RequiredArgsConstructor
