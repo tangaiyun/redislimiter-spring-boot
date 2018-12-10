@@ -4,13 +4,15 @@
 an excellent API limiting framework for Spring boot/cloud application, especially for microservice project 
 
 # Quickstart
-## 1. git clone https://github.com/tangaiyun/redislimiter-spring-boot.git
 
-## 2. cd redislimiter-spring-boot-starter
 
-## 3. mvn clean install
+*  `git clone https://github.com/tangaiyun/redislimiter-spring-boot.git`
 
-## 4. create a Spring boot API project refer to sample project "demo1"，and you need to add dependency in pom.xml
+* `cd redislimiter-spring-boot-starter`
+
+* `mvn clean install`
+
+* create a Spring boot API project refer to sample project "demo1"，and you need to add dependency in pom.xml
 ```
         <dependency>
             <groupId>com.tay</groupId>
@@ -18,7 +20,7 @@ an excellent API limiting framework for Spring boot/cloud application, especiall
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 ```
-## 5. modify application configuration---resources/application.yml
+* modify application configuration---resources/application.yml
 ```
 server:
     port: 8888                                #port
@@ -32,7 +34,7 @@ spring:
 ```
 spring.application.name must be set
 
-## 6. create a RestController class
+* create a RestController class
 ```
 package com.tay.demo1;
 
@@ -67,15 +69,15 @@ public class DemoController {
 
 }
 ```
-## 7. Start Redis server in local machine, if your PC has Docker, there is a easy way to start Redis server in Docker
+* Start Redis server in local machine, if your PC has Docker, there is a easy way to start Redis server in Docker
 ```
 sudo docker run -d -p 6379:6379 redis
 ```
 it is so crazy!
 
-## 8. Run Demo1Application.java
+* Run Demo1Application.java
 
-## 9. Testing
+* Testing
 ```
 You can use a HTTP client tool such as postman,restd, curl, and visit the URL http://localhost:8888/demo/test. Don't forget to add a pair value "userid=tom" in your HTTP request header, then you can find the user with userid "tom" can visit this url twice successfully at most in one minute.
 
@@ -83,7 +85,7 @@ by postman,restd visit the URL http://localhost:8888/demo/dynamictest, and put t
 ```
 
 # Advanced Guide
-## 1. All Configuration Items
+* All Configuration Items
 ```
 spring:
     redis-limiter: 
@@ -100,10 +102,10 @@ spring:
         enable-dynamical-conf: true     # the switch for enable dynamical   default：false 
         channel： #RLConfigChannel      # conf change event pub/sub channel default： #RLConfigChannel   
 ```
-## 2 Annotation
+* Annotation
 @RateLimiter, @DynamicRateLimiter   
 
-## 2.1 Annotation -- General Description
+* Annotation -- General Description
 @RateLimiter @DynamicRateLimiter these two annotations have same four attributes (base, path, timeUnit, permits)
 
 ```
@@ -134,7 +136,7 @@ public @interface DynamicRateLimiter {
 ```
 
 
-## 2.2 Annotation -- base(Spel expression)
+* Annotation -- base(Spel expression)
 Two annotations have the "base" attribute，that means what your limiting based on(maybe user's id, remote IP etc.)，and if you don't asssign "base" attribute, then all requests will be accumulated as a whole one，the "base" should be a Spel exression。
 
 ```
@@ -146,7 +148,7 @@ at the present, the "base" expression only supports get value from HTTP header a
 "#Headers['X-Real-IP']"
 "#Cookies['userid']"
 ```
-## 2.3 Annotation -- path
+* Annotation -- path
 The path has default value "" if you did not set. When the path has value "", and the value of path will be set as request.getRequestURI(). In general, that is OK. But in one special case, you should need to set path explicitly.
 
 for example as below:
@@ -163,17 +165,17 @@ the GetMapping has PathVariable-{userid}. In this case, we would not count visit
 value to "/user", so all requsts like "/user/xxx" will be added up base on "/user".  
 
 
-## 2.4 Annotation -- timeUnit
+* Annotation -- timeUnit
 Four TimeUnits are valid ：
 ```
 TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS, TimeUnit.DAYS
 ```
 
-## 2.5 Annotation -- permits
+* Annotation -- permits
 
 Number of visits allowed per unit of time
 
-## 3. Dynamic configuration
+* Dynamic configuration
 @DynamicRateLimiter annotation makes configuration can be changed dynamically, we can change the configuraton by internal RESTful API.
 ```
 RestController
