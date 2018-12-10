@@ -128,7 +128,7 @@ public final class RedisLimiterConfigProcessor extends JedisPubSub implements Ap
                 int modifiers = method.getModifiers();
                 if(Modifier.isPublic(modifiers) && method.isAnnotationPresent(DynamicRateLimiter.class)) {
                     if(!redisLimiterProperties.isEnableDynamicalConf()) {
-                        throw new RuntimeException("Must set spring.redisLimiter.enableDynamicalConf = true, then you can use DynamicRateLimiter annotation.");
+                        throw new RuntimeException("Must set spring.redisLimiter.enable-dynamical-conf = true, then you can use DynamicRateLimiter annotation.");
                     }
                     DynamicRateLimiter dynamicRateLimiter = method.getAnnotation(DynamicRateLimiter.class);
                     int permits = dynamicRateLimiter.permits();
