@@ -73,7 +73,6 @@ public class DemoController {
 ```
 sudo docker run -d -p 6379:6379 redis
 ```
-it is so crazy!
 
 * Run Demo1Application.java
 
