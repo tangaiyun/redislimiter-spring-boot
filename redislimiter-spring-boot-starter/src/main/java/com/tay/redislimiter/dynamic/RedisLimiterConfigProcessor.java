@@ -167,16 +167,18 @@ public final class RedisLimiterConfigProcessor extends JedisPubSub implements Ap
         if(config != null) {
             if (applicationName.equals(config.getApplicationName())) {
                 String key = config.getControllerName() + ":" + config.getMethodName();
-                if (config.isDeleted()) {
-                    configMap.remove(key);
-                } else {
-                    configMap.put(key, config);
+                synchronized(this) {
+                    if (config.isDeleted()) {
+                        configMap.remove(key);
+                    } else {
+                        configMap.put(key, config);
+                    }
                 }
             }
         }
     }
 
-    public LimiterConfig get(String key) {
+    public synchronized LimiterConfig get(String key) {
         return configMap.get(key);
     }
 
