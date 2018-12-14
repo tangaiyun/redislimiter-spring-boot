@@ -18,49 +18,36 @@
  */
 package com.tay.redislimiter.core;
 
-import com.tay.redislimiter.core.RedisRateLimiter;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import redis.clients.jedis.JedisPool;
 
-import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @RequiredArgsConstructor
 public class RedisRateLimiterFactory {
 
     private final JedisPool jedisPool;
-    private final WeakHashMap<String, RedisRateLimiter> limiterMap = new WeakHashMap<>();
-    private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
+    private Cache<CacheKey, RedisRateLimiter> redisRateLimiterCache =
+            Caffeine.newBuilder().maximumSize(10000).expireAfterWrite(1, TimeUnit.HOURS).build();
 
-    public RedisRateLimiter get(String keyPrefix, TimeUnit timeUnit, int permits) {
-        RedisRateLimiter redisRateLimiter = null;
-        try {
-            lock.readLock().lock();
-            if(limiterMap.containsKey(keyPrefix)) {
-                redisRateLimiter = limiterMap.get(keyPrefix);
-            }
-        }
-        finally {
-            lock.readLock().unlock();
-        }
-
+    public RedisRateLimiter get(TimeUnit timeUnit, int permits) {
+        CacheKey key = new CacheKey(timeUnit, permits);
+        RedisRateLimiter redisRateLimiter = redisRateLimiterCache.getIfPresent(key);
         if(redisRateLimiter == null) {
-            try {
-                lock.writeLock().lock();
-                if(limiterMap.containsKey(keyPrefix)) {
-                    redisRateLimiter = limiterMap.get(keyPrefix);
-                }
-                if(redisRateLimiter == null) {
-                    redisRateLimiter = new RedisRateLimiter(jedisPool, timeUnit, permits);
-                    limiterMap.put(keyPrefix, redisRateLimiter);
-                }
-            }
-            finally {
-                lock.writeLock().unlock();
-            }
+            redisRateLimiter = new RedisRateLimiter(jedisPool, timeUnit, permits);
+            redisRateLimiterCache.put(key, redisRateLimiter);
         }
         return redisRateLimiter;
+    }
+    @Data
+    @AllArgsConstructor
+    private static class CacheKey {
+        private TimeUnit timeUnit;
+        private int permits;
     }
 }
