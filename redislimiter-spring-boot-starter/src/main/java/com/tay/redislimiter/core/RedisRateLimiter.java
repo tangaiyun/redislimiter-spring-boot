@@ -35,7 +35,6 @@ import redis.clients.jedis.JedisPool;
 public class RedisRateLimiter {
     private final JedisPool jedisPool;
     private final TimeUnit timeUnit;
-    private final int permitsPerUnit;
     private static final String LUA_SECOND_SCRIPT = " local current; "
             + " current = redis.call('incr',KEYS[1]); "
             + " if tonumber(current) == 1 then "
@@ -74,7 +73,7 @@ public class RedisRateLimiter {
     private static final long MICROSECONDS_IN_DAY = 24 * 3600 * 1000000;
 
 
-    public boolean acquire(String keyPrefix){
+    public boolean acquire(String keyPrefix, int permitsPerUnit){
         boolean rtv = false;
         if (jedisPool != null) {
             try (Jedis jedis = jedisPool.getResource()) {
@@ -90,13 +89,13 @@ public class RedisRateLimiter {
                     rtv = (val > 0);
 
                 } else if (timeUnit == TimeUnit.MINUTES || timeUnit == TimeUnit.HOURS || timeUnit == TimeUnit.DAYS) {
-                    rtv = doPeriod(jedis, keyPrefix);
+                    rtv = doPeriod(jedis, keyPrefix, permitsPerUnit);
                 } 
             }
         }
         return rtv;
     }
-    private boolean doPeriod(Jedis jedis, String keyPrefix) {
+    private boolean doPeriod(Jedis jedis, String keyPrefix, int permitsPerUnit) {
         String[] keyNames = getKeyNames(jedis, keyPrefix);
         long currentTimeInMicroSecond = getRedisTime(jedis);
         String previousSectionBeginScore = String.valueOf((currentTimeInMicroSecond - getPeriodMicrosecond()));
