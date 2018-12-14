@@ -32,22 +32,15 @@ public class RedisRateLimiterFactory {
 
     private final JedisPool jedisPool;
 
-    private Cache<CacheKey, RedisRateLimiter> redisRateLimiterCache =
-            Caffeine.newBuilder().maximumSize(10000).expireAfterAccess(1, TimeUnit.HOURS).build();
+    private Cache<TimeUnit, RedisRateLimiter> redisRateLimiterCache =
+            Caffeine.newBuilder().maximumSize(10).build();
 
-    public RedisRateLimiter get(TimeUnit timeUnit, int permits) {
-        CacheKey key = new CacheKey(timeUnit, permits);
-        RedisRateLimiter redisRateLimiter = redisRateLimiterCache.getIfPresent(key);
+    public RedisRateLimiter get(TimeUnit timeUnit) {
+        RedisRateLimiter redisRateLimiter = redisRateLimiterCache.getIfPresent(timeUnit);
         if(redisRateLimiter == null) {
-            redisRateLimiter = new RedisRateLimiter(jedisPool, timeUnit, permits);
-            redisRateLimiterCache.put(key, redisRateLimiter);
+            redisRateLimiter = new RedisRateLimiter(jedisPool, timeUnit);
+            redisRateLimiterCache.put(timeUnit, redisRateLimiter);
         }
         return redisRateLimiter;
-    }
-    @Data
-    @AllArgsConstructor
-    private static class CacheKey {
-        private TimeUnit timeUnit;
-        private int permits;
     }
 }
