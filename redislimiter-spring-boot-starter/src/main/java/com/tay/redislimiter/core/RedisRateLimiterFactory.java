@@ -33,7 +33,7 @@ public class RedisRateLimiterFactory {
     private final JedisPool jedisPool;
 
     private Cache<CacheKey, RedisRateLimiter> redisRateLimiterCache =
-            Caffeine.newBuilder().maximumSize(10000).expireAfterWrite(1, TimeUnit.HOURS).build();
+            Caffeine.newBuilder().maximumSize(10000).expireAfterAccess(1, TimeUnit.HOURS).build();
 
     public RedisRateLimiter get(TimeUnit timeUnit, int permits) {
         CacheKey key = new CacheKey(timeUnit, permits);
