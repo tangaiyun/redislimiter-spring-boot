@@ -18,7 +18,7 @@
  */
 package com.tay.redislimiter.web;
 
-import com.tay.redislimiter.RateCheckTaskRunner;
+import com.tay.redislimiter.core.RateCheckTaskRunner;
 import com.tay.redislimiter.RateLimiter;
 import com.tay.redislimiter.RedisLimiterProperties;
 import com.tay.redislimiter.dynamic.DynamicRateLimiter;

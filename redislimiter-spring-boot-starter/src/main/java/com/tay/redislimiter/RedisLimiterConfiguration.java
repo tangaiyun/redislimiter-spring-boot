@@ -18,6 +18,7 @@
  */
 package com.tay.redislimiter;
 
+import com.tay.redislimiter.core.RateCheckTaskRunner;
 import com.tay.redislimiter.core.RedisRateLimiterFactory;
 import com.tay.redislimiter.dynamic.LimiterConfigResource;
 import com.tay.redislimiter.dynamic.RedisLimiterConfigProcessor;
