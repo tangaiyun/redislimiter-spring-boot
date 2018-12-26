@@ -29,7 +29,7 @@ import org.springframework.context.ApplicationContextAware;
 import java.util.concurrent.*;
 
 @RequiredArgsConstructor
-public class RateCheckTaskRunner implements ApplicationContextAware {
+public final class RateCheckTaskRunner implements ApplicationContextAware {
     private ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     private final RedisRateLimiterFactory redisRateLimiterFactory;
