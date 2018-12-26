@@ -20,7 +20,7 @@ package com.tay.redislimiter.event;
 
 import org.springframework.context.ApplicationEvent;
 
-public class RateCheckFailureEvent extends ApplicationEvent {
+public final class RateCheckFailureEvent extends ApplicationEvent {
     private String msg;
     public RateCheckFailureEvent (Object source, String msg) {
         super(source);
