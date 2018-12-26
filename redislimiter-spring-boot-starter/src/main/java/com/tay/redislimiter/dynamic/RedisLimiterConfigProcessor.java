@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 public final class RedisLimiterConfigProcessor extends JedisPubSub implements ApplicationContextAware, BeanPostProcessor, InitializingBean {
-    Logger logger = LoggerFactory.getLogger(RedisLimiterConfigProcessor.class);
+    private static Logger logger = LoggerFactory.getLogger(RedisLimiterConfigProcessor.class);
 
     private final RedisLimiterProperties redisLimiterProperties;
 
