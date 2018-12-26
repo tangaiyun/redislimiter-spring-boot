@@ -28,7 +28,7 @@ import redis.clients.jedis.JedisPool;
 import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
-public class RedisRateLimiterFactory {
+public final class RedisRateLimiterFactory {
 
     private final JedisPool jedisPool;
 
