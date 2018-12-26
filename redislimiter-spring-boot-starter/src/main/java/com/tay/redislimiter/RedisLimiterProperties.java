@@ -23,7 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "spring.redis-limiter")
 @Data
-public class RedisLimiterProperties {
+public final class RedisLimiterProperties {
     /**
      * Redis server host
      */
