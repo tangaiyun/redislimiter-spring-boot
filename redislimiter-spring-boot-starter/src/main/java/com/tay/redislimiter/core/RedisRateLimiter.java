@@ -32,7 +32,7 @@ import redis.clients.jedis.JedisPool;
  * @author Aiyun Tang <aiyun.tang@gmail.com>
  */
 @RequiredArgsConstructor
-public class RedisRateLimiter {
+public final class RedisRateLimiter {
     private final JedisPool jedisPool;
     private final TimeUnit timeUnit;
     private static final String LUA_SECOND_SCRIPT = " local current; "
