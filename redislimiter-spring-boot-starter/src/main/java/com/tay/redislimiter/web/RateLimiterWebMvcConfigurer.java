@@ -24,7 +24,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @RequiredArgsConstructor
-public class RateLimiterWebMvcConfigurer implements WebMvcConfigurer {
+public final class RateLimiterWebMvcConfigurer implements WebMvcConfigurer {
 
     private final RateCheckInterceptor rateCheckInterceptor;
 
