@@ -48,7 +48,7 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
-public class RateCheckInterceptor implements HandlerInterceptor, ApplicationContextAware, InitializingBean {
+public final class RateCheckInterceptor implements HandlerInterceptor, ApplicationContextAware, InitializingBean {
 
     private final RedisLimiterProperties redisLimiterProperties;
 
