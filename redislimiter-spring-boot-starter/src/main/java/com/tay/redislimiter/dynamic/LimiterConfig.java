@@ -21,7 +21,7 @@ package com.tay.redislimiter.dynamic;
 import lombok.Data;
 
 @Data
-public class LimiterConfig {
+public final class LimiterConfig {
     private String applicationName;
     private String controllerName;
     private String methodName;
