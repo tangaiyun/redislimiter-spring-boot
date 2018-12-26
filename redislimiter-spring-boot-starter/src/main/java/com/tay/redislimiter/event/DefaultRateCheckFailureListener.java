@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 public final class DefaultRateCheckFailureListener implements RateCheckFailureListener{
 
-    Logger logger = LoggerFactory.getLogger(DefaultRateCheckFailureListener.class);
+    private static Logger logger = LoggerFactory.getLogger(DefaultRateCheckFailureListener.class);
     @Override
     public void onApplicationEvent(RateCheckFailureEvent event) {
         logger.warn(event.getMsg());
