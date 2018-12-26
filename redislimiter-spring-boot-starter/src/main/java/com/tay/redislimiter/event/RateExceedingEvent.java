@@ -22,7 +22,7 @@ import lombok.Data;
 import org.springframework.context.ApplicationEvent;
 
 @Data
-public class RateExceedingEvent extends ApplicationEvent {
+public final class RateExceedingEvent extends ApplicationEvent {
     private static Object dummy = new Object();
     private String applicationName;
     private String controllerName;
