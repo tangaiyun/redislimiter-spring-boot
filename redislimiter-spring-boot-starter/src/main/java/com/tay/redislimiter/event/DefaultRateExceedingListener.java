@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class DefaultRateExceedingListener implements  RateExceedingListener {
-    Logger logger = LoggerFactory.getLogger(DefaultRateExceedingListener.class);
+    private static Logger logger = LoggerFactory.getLogger(DefaultRateExceedingListener.class);
 
     @Override
     public void onApplicationEvent(RateExceedingEvent event) {
