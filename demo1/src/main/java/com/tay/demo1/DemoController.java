@@ -42,7 +42,7 @@ public class DemoController {
     @GetMapping("/dynamictest")
     //基于来源ip限流，独立ip每分钟最多访问5次访问，来源ip位于header中，key为X-Real-IP
     //DynamicRateLimiter标签代表动态配置，此类配置可在运行时动态修改
-    @DynamicRateLimiter(base = "#Headers['X-Real-IP']", permits = 5, timeUnit = TimeUnit.MINUTES)
+    @DynamicRateLimiter(base = "#Headers['x-real-ip']", permits = 5, timeUnit = TimeUnit.MINUTES)
     public String dynamicTest() {
         return "dynamictest!";
     }
