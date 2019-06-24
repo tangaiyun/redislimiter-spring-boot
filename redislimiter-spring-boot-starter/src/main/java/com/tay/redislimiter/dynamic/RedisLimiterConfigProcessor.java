@@ -77,6 +77,9 @@ public final class RedisLimiterConfigProcessor extends JedisPubSub implements Ap
             Jedis jedis = null;
             try {
                 jedis = new Jedis(redisLimiterProperties.getRedisHost(), redisLimiterProperties.getRedisPort(), 0);
+                if(redisLimiterProperties.getRedisPassword() != null) {
+                    jedis.auth(redisLimiterProperties.getRedisPassword());
+                }
                 jedis.subscribe(RedisLimiterConfigProcessor.this, redisLimiterProperties.getChannel());
             }
             catch (JedisConnectionException e) {
