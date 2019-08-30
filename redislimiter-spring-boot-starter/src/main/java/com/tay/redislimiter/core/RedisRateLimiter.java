@@ -68,9 +68,9 @@ public final class RedisRateLimiter {
     private static final int PERIOD_HOUR_TTL = 2 * 3600 + 10;
     private static final int PERIOD_DAY_TTL = 2 * 3600 * 24 + 10;
 
-    private static final long MICROSECONDS_IN_MINUTE = 60 * 1000000;
-    private static final long MICROSECONDS_IN_HOUR = 3600 * 1000000;
-    private static final long MICROSECONDS_IN_DAY = 24 * 3600 * 1000000;
+    private static final long MICROSECONDS_IN_MINUTE = 60 * 1000000L;
+    private static final long MICROSECONDS_IN_HOUR = 3600 * 1000000L;
+    private static final long MICROSECONDS_IN_DAY = 24 * 3600 * 1000000L;
 
 
     public boolean acquire(String keyPrefix, int permitsPerUnit){
@@ -119,9 +119,9 @@ public final class RedisRateLimiter {
      */
     private long getRedisTime(Jedis jedis) {
         List<String> jedisTime = jedis.time();
-        Long currentSecond = Long.parseLong(jedisTime.get(0));
-        Long microSecondsElapseInCurrentSecond = Long.parseLong(jedisTime.get(1));
-        Long currentTimeInMicroSecond = currentSecond * 1000000 + microSecondsElapseInCurrentSecond;
+        long currentSecond = Long.parseLong(jedisTime.get(0));
+        long microSecondsElapseInCurrentSecond = Long.parseLong(jedisTime.get(1));
+        long currentTimeInMicroSecond = currentSecond * 1000000 + microSecondsElapseInCurrentSecond;
         return currentTimeInMicroSecond;
     }
 
