@@ -32,9 +32,10 @@ import redis.clients.jedis.JedisPool;
  * @author Aiyun Tang <aiyun.tang@gmail.com>
  */
 @RequiredArgsConstructor
-public final class RedisRateLimiter {
-    private final JedisPool jedisPool;
-    private final TimeUnit timeUnit;
+public class RedisRateLimiter {
+    private JedisPool jedisPool;
+    private TimeUnit timeUnit;
+    private int permitsPerUnit;
     private static final String LUA_SECOND_SCRIPT = " local current; "
             + " current = redis.call('incr',KEYS[1]); "
             + " if tonumber(current) == 1 then "
@@ -48,11 +49,11 @@ public final class RedisRateLimiter {
             + "     end "
             + " end ";
     private static final String LUA_PERIOD_SCRIPT =   " local currentSectionCount;"
-            + " local previousSectionCount;"
+            + " local previosSectionCount;"
             + " local totalCountInPeriod;"
             + " currentSectionCount = redis.call('zcount', KEYS[2], '-inf', '+inf');"
-            + " previousSectionCount = redis.call('zcount', KEYS[1], ARGV[3], '+inf');"
-            + " totalCountInPeriod = tonumber(currentSectionCount)+tonumber(previousSectionCount);"
+            + " previosSectionCount = redis.call('zcount', KEYS[1], ARGV[3], '+inf');"
+            + " totalCountInPeriod = tonumber(currentSectionCount)+tonumber(previosSectionCount);"
             + " if totalCountInPeriod < tonumber(ARGV[5]) then "
             + " 	redis.call('zadd',KEYS[2],ARGV[1],ARGV[2]);"
             + "		if tonumber(currentSectionCount) == 0 then "
@@ -72,78 +73,103 @@ public final class RedisRateLimiter {
     private static final long MICROSECONDS_IN_HOUR = 3600 * 1000000L;
     private static final long MICROSECONDS_IN_DAY = 24 * 3600 * 1000000L;
 
+    public RedisRateLimiter(JedisPool jedisPool, TimeUnit timeUnit, int permitsPerUnit) {
+        this.jedisPool = jedisPool;
+        this.timeUnit = timeUnit;
+        this.permitsPerUnit = permitsPerUnit;
+    }
 
-    public boolean acquire(String keyPrefix, int permitsPerUnit){
+    public JedisPool getJedisPool() {
+        return jedisPool;
+    }
+
+    public TimeUnit getTimeUnit() {
+        return timeUnit;
+    }
+
+    public int getPermitsPerSecond() {
+        return permitsPerUnit;
+    }
+
+    public boolean acquire(String keyPrefix){
         boolean rtv = false;
         if (jedisPool != null) {
-            try (Jedis jedis = jedisPool.getResource()) {
+            Jedis jedis = null;
+            try {
+                jedis = jedisPool.getResource();
                 if (timeUnit == TimeUnit.SECONDS) {
                     String keyName = getKeyNameForSecond(jedis, keyPrefix);
 
-                    List<String> keys = new ArrayList<>(1);
+                    List<String> keys = new ArrayList<String>();
                     keys.add(keyName);
-                    List<String> args = new ArrayList<>(2);
-                    args.add(String.valueOf(getExpire()));
-                    args.add(String.valueOf(permitsPerUnit));
-                    Long val = (Long) jedis.eval(LUA_SECOND_SCRIPT, keys, args);
+                    List<String> argvs = new ArrayList<String>();
+                    argvs.add(String.valueOf(getExpire()));
+                    argvs.add(String.valueOf(permitsPerUnit));
+                    Long val = (Long)jedis.eval(LUA_SECOND_SCRIPT, keys, argvs);
                     rtv = (val > 0);
 
                 } else if (timeUnit == TimeUnit.MINUTES || timeUnit == TimeUnit.HOURS || timeUnit == TimeUnit.DAYS) {
-                    rtv = doPeriod(jedis, keyPrefix, permitsPerUnit);
-                } 
+                    rtv = doPeriod(jedis, keyPrefix);
+                }
+            } finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
             }
         }
         return rtv;
     }
-    private boolean doPeriod(Jedis jedis, String keyPrefix, int permitsPerUnit) {
-        String[] keyNames = getKeyNames(jedis, keyPrefix);
-        long currentTimeInMicroSecond = getRedisTime(jedis);
-        String previousSectionBeginScore = String.valueOf((currentTimeInMicroSecond - getPeriodMicrosecond()));
-        String expires =String.valueOf(getExpire());
-        String currentTimeInMicroSecondStr = String.valueOf(currentTimeInMicroSecond);
-        List<String> keys = new ArrayList<String>(2);
-        keys.add(keyNames[0]);
-        keys.add(keyNames[1]);
-        List<String> args = new ArrayList<>(5);
-        args.add(currentTimeInMicroSecondStr);
-        args.add(currentTimeInMicroSecondStr);
-        args.add(previousSectionBeginScore);
-        args.add(expires);
-        args.add(String.valueOf(permitsPerUnit));
-        Long val = (Long)jedis.eval(LUA_PERIOD_SCRIPT, keys, args);
-        return (val > 0);
-    }
-
-    /**
-     *  因为redis访问实际上是单线程的，而且jedis.time()方法返回的时间精度为微秒级，每一个jedis.time()调用耗时应该会超过1微秒，因此我们可以认为每次jedis.time()返回的时间都是唯一且递增的
-     */
-    private long getRedisTime(Jedis jedis) {
+    private boolean doPeriod(Jedis jedis, String keyPrefix) {
         List<String> jedisTime = jedis.time();
         long currentSecond = Long.parseLong(jedisTime.get(0));
         long microSecondsElapseInCurrentSecond = Long.parseLong(jedisTime.get(1));
+        String[] keyNames = getKeyNames(currentSecond, keyPrefix);
+        //因为redis访问实际上是单线程的，而且jedis.time()方法返回的时间精度为微秒级，每一个jedis.time()调用耗时应该会超过1微秒，因此我们可以认为每次jedis.time()返回的时间都是唯一且递增
+        //因此这个currentTimeInMicroSecond在多线程情况下不会存在相同
         long currentTimeInMicroSecond = currentSecond * 1000000 + microSecondsElapseInCurrentSecond;
-        return currentTimeInMicroSecond;
+        String previousSectionBeginScore = String.valueOf((currentTimeInMicroSecond - getPeriodMicrosecond()));
+        String expires =String.valueOf(getExpire());
+        String currentTimeInMicroSecondStr = String.valueOf(currentTimeInMicroSecond);
+        List<String> keys = new ArrayList<String>();
+        keys.add(keyNames[0]);
+        keys.add(keyNames[1]);
+        List<String> argvs = new ArrayList<String>();
+        argvs.add(currentTimeInMicroSecondStr);
+        argvs.add(currentTimeInMicroSecondStr);
+        argvs.add(previousSectionBeginScore);
+        argvs.add(expires);
+        argvs.add(String.valueOf(permitsPerUnit));
+        Long val = (Long)jedis.eval(LUA_PERIOD_SCRIPT, keys, argvs);
+        return (val > 0);
     }
+
+
+//	private long getRedisTime(Jedis jedis) {
+//		List<String> jedisTime = jedis.time();
+//		long currentSecond = Long.parseLong(jedisTime.get(0));
+//		long microSecondsElapseInCurrentSecond = Long.parseLong(jedisTime.get(1));
+//		long currentTimeInMicroSecond = currentSecond * 1000000 + microSecondsElapseInCurrentSecond;
+//		return currentTimeInMicroSecond;
+//	}
 
     private String getKeyNameForSecond(Jedis jedis, String keyPrefix) {
-        String keyName  = keyPrefix + ":" + jedis.time().get(0);
-        return keyName;
+        return keyPrefix + ":" + jedis.time().get(0);
     }
 
-    private String[] getKeyNames(Jedis jedis, String keyPrefix) {
+    private String[] getKeyNames(long currentSecond, String keyPrefix) {
         String[] keyNames = null;
         if (timeUnit == TimeUnit.MINUTES) {
-            long index = Long.parseLong(jedis.time().get(0)) / 60;
+            long index = currentSecond / 60;
             String keyName1 = keyPrefix + ":" + (index - 1);
             String keyName2 = keyPrefix + ":" + index;
             keyNames = new String[] { keyName1, keyName2 };
         } else if (timeUnit == TimeUnit.HOURS) {
-            long index = Long.parseLong(jedis.time().get(0)) / 3600;
+            long index = currentSecond / 3600;
             String keyName1 = keyPrefix + ":" + (index - 1);
             String keyName2 = keyPrefix + ":" + index;
             keyNames = new String[] { keyName1, keyName2 };
         } else if (timeUnit == TimeUnit.DAYS) {
-            long index = Long.parseLong(jedis.time().get(0)) / (3600 * 24);
+            long index = currentSecond / (3600 * 24);
             String keyName1 = keyPrefix + ":" + (index - 1);
             String keyName2 = keyPrefix + ":" + index;
             keyNames = new String[] { keyName1, keyName2 };
