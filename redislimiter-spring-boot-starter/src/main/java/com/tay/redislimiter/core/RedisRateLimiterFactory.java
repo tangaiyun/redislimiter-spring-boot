@@ -38,8 +38,13 @@ public final class RedisRateLimiterFactory {
     public RedisRateLimiter get(TimeUnit timeUnit) {
         RedisRateLimiter redisRateLimiter = redisRateLimiterCache.getIfPresent(timeUnit);
         if(redisRateLimiter == null) {
-            redisRateLimiter = new RedisRateLimiter(jedisPool, timeUnit);
-            redisRateLimiterCache.put(timeUnit, redisRateLimiter);
+            synchronized (RedisRateLimiterFactory.class) {
+                redisRateLimiter = redisRateLimiterCache.getIfPresent(timeUnit);
+                if(redisRateLimiter == null) {
+                    redisRateLimiter = new RedisRateLimiter(jedisPool, timeUnit);
+                    redisRateLimiterCache.put(timeUnit, redisRateLimiter);
+                }
+            }
         }
         return redisRateLimiter;
     }
