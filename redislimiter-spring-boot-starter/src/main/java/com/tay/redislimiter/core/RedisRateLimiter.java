@@ -35,7 +35,7 @@ import redis.clients.jedis.JedisPool;
 public class RedisRateLimiter {
     private JedisPool jedisPool;
     private TimeUnit timeUnit;
-    private int permitsPerUnit;
+//    private int permitsPerUnit;
     private static final String LUA_SECOND_SCRIPT = " local current; "
             + " current = redis.call('incr',KEYS[1]); "
             + " if tonumber(current) == 1 then "
@@ -73,10 +73,9 @@ public class RedisRateLimiter {
     private static final long MICROSECONDS_IN_HOUR = 3600 * 1000000L;
     private static final long MICROSECONDS_IN_DAY = 24 * 3600 * 1000000L;
 
-    public RedisRateLimiter(JedisPool jedisPool, TimeUnit timeUnit, int permitsPerUnit) {
+    public RedisRateLimiter(JedisPool jedisPool, TimeUnit timeUnit) {
         this.jedisPool = jedisPool;
         this.timeUnit = timeUnit;
-        this.permitsPerUnit = permitsPerUnit;
     }
 
     public JedisPool getJedisPool() {
@@ -87,11 +86,7 @@ public class RedisRateLimiter {
         return timeUnit;
     }
 
-    public int getPermitsPerSecond() {
-        return permitsPerUnit;
-    }
-
-    public boolean acquire(String keyPrefix){
+    public boolean acquire(String keyPrefix, int permitsPerUnit){
         boolean rtv = false;
         if (jedisPool != null) {
             Jedis jedis = null;
@@ -109,7 +104,7 @@ public class RedisRateLimiter {
                     rtv = (val > 0);
 
                 } else if (timeUnit == TimeUnit.MINUTES || timeUnit == TimeUnit.HOURS || timeUnit == TimeUnit.DAYS) {
-                    rtv = doPeriod(jedis, keyPrefix);
+                    rtv = doPeriod(jedis, keyPrefix, permitsPerUnit);
                 }
             } finally {
                 if (jedis != null) {
@@ -119,7 +114,7 @@ public class RedisRateLimiter {
         }
         return rtv;
     }
-    private boolean doPeriod(Jedis jedis, String keyPrefix) {
+    private boolean doPeriod(Jedis jedis, String keyPrefix, int permitsPerUnit) {
         List<String> jedisTime = jedis.time();
         long currentSecond = Long.parseLong(jedisTime.get(0));
         long microSecondsElapseInCurrentSecond = Long.parseLong(jedisTime.get(1));
