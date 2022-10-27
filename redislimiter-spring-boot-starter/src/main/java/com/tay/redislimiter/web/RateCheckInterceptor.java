@@ -157,6 +157,7 @@ public final class RateCheckInterceptor implements HandlerInterceptor, Applicati
         ExpressionParser expressionParser = new SpelExpressionParser();
         mountCookies(request, context);
         mountHeaders(request, context);
+        mountAttributes(request, context);
         Expression expression = expressionParser.parseExpression(baseExp);
         String baseVal = expression.getValue(context, String.class);
         if(baseVal == null) {
@@ -187,6 +188,18 @@ public final class RateCheckInterceptor implements HandlerInterceptor, Applicati
         }
         context.setVariable("Headers", headerMap);
     }
+    
+    private void mountAttributes(HttpServletRequest request, StandardEvaluationContext context) {
+    	HashMap<String, String> map = new HashMap();
+        Enumeration<String> attrNames = request.getAttributeNames();
+        if (attrNames != null) {
+            while (attrNames.hasMoreElements()) {
+                String headerName = attrNames.nextElement();
+                map.put(headerName, String.valueOf(request.getAttribute(headerName)));
+            }
+        }
+        context.setVariable("Attributes", map);
+	}
 
     private void buildDenyResponse(HttpServletResponse response) throws Exception{
         response.setStatus(HttpStatus.FORBIDDEN.value());
